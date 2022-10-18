@@ -3,10 +3,12 @@ import pandas as pd
 from sklearn.svm import SVC
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import plot_confusion_matrix, plot_roc_curve, plot_precision_recall_curve
 from sklearn.metrics import precision_score, recall_score
+from matplotlib import pyplot
 
 
 def main():
@@ -53,7 +55,8 @@ def main():
 
     st.sidebar.subheader("Choose Classifier")
     classifier = st.sidebar.selectbox("Classifier",
-                                      ("Support Vector Machine (SVM)", "Logistic Regression", "Random Forest"))
+                                      ("Support Vector Machine (SVM)", "Logistic Regression", "Random Forest",
+                                       "KNeighborsClassifier"))
 
     if classifier == 'Support Vector Machine (SVM)':
         st.sidebar.subheader("Model Hyper parameters")
@@ -72,6 +75,7 @@ def main():
             st.write("Accuracy: ", accuracy.round(2))
             st.write("Precision: ", precision_score(y_test, y_pred, labels=class_names).round(2))
             st.write("Recall: ", recall_score(y_test, y_pred, labels=class_names).round(2))
+            st.set_option('deprecation.showPyplotGlobalUse', False)
             plot_metrics(metrics)
 
     if classifier == 'Logistic Regression':
@@ -92,6 +96,7 @@ def main():
             st.write("Accuracy: ", accuracy.round(2))
             st.write("Precision: ", precision_score(y_test, y_pred, labels=class_names).round(2))
             st.write("Recall: ", recall_score(y_test, y_pred, labels=class_names).round(2))
+            st.set_option('deprecation.showPyplotGlobalUse', False)
             plot_metrics(metrics)
 
     if classifier == 'Random Forest':
@@ -114,6 +119,28 @@ def main():
             st.write("Accuracy: ", accuracy.round(2))
             st.write("Precision: ", precision_score(y_test, y_pred, labels=class_names).round(2))
             st.write("Recall: ", recall_score(y_test, y_pred, labels=class_names).round(2))
+            st.set_option('deprecation.showPyplotGlobalUse', False)
+            plot_metrics(metrics)
+
+    if classifier == 'KNeighborsClassifier':
+        st.sidebar.subheader("Model Hyper parameters")
+        n_neighbors = st.sidebar.number_input("N_Neighbours", 1, 100, step=1, key='n_neighbors')
+        algorithm = st.sidebar.radio("Algorithm", {'auto', 'ball_tree', 'kd_tree', 'brute'}, key='algorithm')
+        weights = st.sidebar.radio(" Weights", {'uniform', 'distance'}, key='weights')
+        leaf_size = st.sidebar.number_input("Leaf Size (Leaf Size)", 10, 100, step=10, key='leaf_size')
+
+        metrics = st.sidebar.multiselect("What metrics to plot ?",
+                                         ('Confusion matrix', 'ROC Curve', 'Precision-Recall Curve'))
+        if st.sidebar.button("Classify", key='classify'):
+            st.subheader("NearestNeighbors Results")
+            model = KNeighborsClassifier(n_neighbors=n_neighbors, algorithm=algorithm, weights=weights, leaf_size=leaf_size,n_jobs=-1,p=2,metric='minkowski', metric_params=None)
+            model.fit(x_train, y_train)
+            accuracy = model.score(x_test, y_test)
+            y_pred = model.predict(x_test)
+            st.write("Accuracy: ", accuracy.round(2))
+            st.write("Precision: ", precision_score(y_test, y_pred, labels=class_names).round(2))
+            st.write("Recall: ", recall_score(y_test, y_pred, labels=class_names).round(2))
+            st.set_option('deprecation.showPyplotGlobalUse', False)
             plot_metrics(metrics)
 
     if st.sidebar.checkbox("Show Raw Data (Classification)", False):
