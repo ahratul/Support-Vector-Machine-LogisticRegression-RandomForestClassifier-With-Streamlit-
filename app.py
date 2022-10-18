@@ -119,7 +119,7 @@ def main():
             st.write("Recall: ", recall_score(y_test, y_pred, labels=class_names).round(2))
             st.set_option('deprecation.showPyplotGlobalUse', False)
             plot_metrics(metrics)
-     if classifier == 'KNeighborsClassifier':
+    if classifier == 'KNeighborsClassifier':
         st.sidebar.subheader("Model Hyper parameters")
         n_neighbors = st.sidebar.number_input("N_Neighbours", 1, 100, step=1, key='n_neighbors')
         algorithm = st.sidebar.radio("Algorithm", {'auto', 'ball_tree', 'kd_tree', 'brute'}, key='algorithm')
