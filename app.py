@@ -54,7 +54,7 @@ def main():
 
     st.sidebar.subheader("Choose Classifier")
     classifier = st.sidebar.selectbox("Classifier",
-                                      ("Support Vector Machine (SVM)", "Logistic Regression", "Random Forest"))
+                                      ("Support Vector Machine (SVM)", "Logistic Regression", "Random Forest","KNeighborsClassifier"))
 
     if classifier == 'Support Vector Machine (SVM)':
         st.sidebar.subheader("Model Hyper parameters")
