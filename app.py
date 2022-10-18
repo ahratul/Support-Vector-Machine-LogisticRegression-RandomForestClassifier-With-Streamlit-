@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 from sklearn.svm import SVC
 from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
@@ -110,6 +111,26 @@ def main():
             st.subheader("Random Forest Results")
             model = RandomForestClassifier(n_estimators=n_estimators, max_depth=max_depth, bootstrap=bootstrap,
                                            n_jobs=-1)
+            model.fit(x_train, y_train)
+            accuracy = model.score(x_test, y_test)
+            y_pred = model.predict(x_test)
+            st.write("Accuracy: ", accuracy.round(2))
+            st.write("Precision: ", precision_score(y_test, y_pred, labels=class_names).round(2))
+            st.write("Recall: ", recall_score(y_test, y_pred, labels=class_names).round(2))
+            st.set_option('deprecation.showPyplotGlobalUse', False)
+            plot_metrics(metrics)
+     if classifier == 'KNeighborsClassifier':
+        st.sidebar.subheader("Model Hyper parameters")
+        n_neighbors = st.sidebar.number_input("N_Neighbours", 1, 100, step=1, key='n_neighbors')
+        algorithm = st.sidebar.radio("Algorithm", {'auto', 'ball_tree', 'kd_tree', 'brute'}, key='algorithm')
+        weights = st.sidebar.radio(" Weights", {'uniform', 'distance'}, key='weights')
+        leaf_size = st.sidebar.number_input("Leaf Size (Leaf Size)", 10, 100, step=10, key='leaf_size')
+
+        metrics = st.sidebar.multiselect("What metrics to plot ?",
+                                         ('Confusion matrix', 'ROC Curve', 'Precision-Recall Curve'))
+        if st.sidebar.button("Classify", key='classify'):
+            st.subheader("NearestNeighbors Results")
+            model = KNeighborsClassifier(n_neighbors=n_neighbors, algorithm=algorithm, weights=weights, leaf_size=leaf_size,n_jobs=-1,p=2,metric='minkowski', metric_params=None)
             model.fit(x_train, y_train)
             accuracy = model.score(x_test, y_test)
             y_pred = model.predict(x_test)
